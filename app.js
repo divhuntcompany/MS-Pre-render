@@ -15,7 +15,7 @@ app.get('/', (req, res) =>
     (async () => {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto(url, { waitUntil: 'networkidle0' });
+        await page.goto(url + '?crawler=true', { waitUntil: 'networkidle0' });
         const html = await page.content();
         await browser.close();
         res.send(html);
