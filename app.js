@@ -3,6 +3,8 @@ const puppeteer = require('puppeteer');
 
 const app = express();
 
+let browser = null;
+
 app.get('/', (req, res) =>
 {
     const url = req.headers?.url;
@@ -11,15 +13,40 @@ app.get('/', (req, res) =>
     {
         res.send('');
     }
+    else 
+    {
+        (async () => 
+        {
+            let html = '';
 
-    (async () => {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto(url + '?crawler=true', { waitUntil: 'networkidle0' });
-        const html = await page.content();
-        await browser.close();
-        res.send(html);
-    })();
+    	    if(!browser)
+    	    {
+    	    	browser = await puppeteer.launch({
+        		    headless: 'new'
+          		});
+    	    }
+
+            const page = await browser.newPage();
+
+            try 
+            {
+                await page.goto(url);
+                html = await page.content();
+
+		        page.close();
+
+                res.statusCode = 200;
+            } 
+            catch (error) 
+            {
+                res.statusCode = 422;
+                html = error;
+                console.log(error);
+            }
+            
+            res.send(html);
+        })();
+    } 
 });
 
 app.listen(3000, () =>
