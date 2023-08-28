@@ -15,6 +15,7 @@ Pre-rendering utilizes node and puppeteer to open webpage and return HTML.
 
 `
 npm install # Install dependencies
+
 node app.js # Start the server
 `
 
