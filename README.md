@@ -13,9 +13,9 @@ Pre-rendering utilizes node and puppeteer to open webpage and return HTML.
 
 ## Usage
 
-`
+```
 npm install 
 node app.js
-`
+```
 
 Make GET request with header `URL=https://webpageurl.com.`
