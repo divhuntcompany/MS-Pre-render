@@ -12,8 +12,10 @@ sudo apt install libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasou
 Pre-rendering utilizes node and puppeteer to open webpage and return HTML.
 
 ## Usage
-Start the server and make GET request with header `URL=https://webpageurl.com.`
 
 `
-node app.js
+npm install # Install dependencies
+node app.js # Start the server
 `
+
+Make GET request with header `URL=https://webpageurl.com.`
