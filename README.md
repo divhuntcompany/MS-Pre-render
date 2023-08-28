@@ -1,8 +1,12 @@
-# prerender
-Website Prerender
+# Divhunt Prerender
+Simple pre-rendering microservice.
 
-sudo apt-get install libnss3-dev
 
-sudo apt-get install libatk1.0-dev
+## Required Libraries
+System required libraries to be installed on system.
+`
+sudo apt install libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libgbm1 libasound2 libpangocairo-1.0-0 libxss1 libgtk-3-0
+`
 
-sudo apt-get install libatk-bridge2.0-dev
+## Other Libraries
+Pre-rendering utilizes node and puppeteer to open webpage and return HTML.
