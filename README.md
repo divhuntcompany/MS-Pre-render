@@ -1,4 +1,4 @@
-# Divhunt Prerender
+# Divhunt Pre-render
 Simple pre-rendering microservice.
 
 ## Required Libraries
