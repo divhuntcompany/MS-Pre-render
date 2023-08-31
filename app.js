@@ -21,6 +21,7 @@ app.use(limiter);
 
 app.get('/', async (req, res) => {
     const url = req.headers?.url;
+    let page = null;
 
     if (!url) {
         res.statusCode = 422;
@@ -36,7 +37,8 @@ app.get('/', async (req, res) => {
 
         try {
             const browser = await browserPromise;
-            const page = await browser.newPage();
+            
+            page = await browser.newPage();
 
             await page.goto(url, { timeout: PAGE_LOAD_TIMEOUT });
 
@@ -49,6 +51,9 @@ app.get('/', async (req, res) => {
             res.statusCode = 200;
             res.send(html);
         } catch (error) {
+            if(page) {
+                await page.close();
+            }
             res.statusCode = 422;
             const errorMessage = error.toString();
             console.log(errorMessage);
