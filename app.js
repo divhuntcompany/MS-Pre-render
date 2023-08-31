@@ -4,7 +4,7 @@ const cache = require('memory-cache');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-const cacheDuration = 60 * 1000; // 1 minute in milliseconds
+const cacheDuration = 15 * 60 * 1000; // 15 minute in milliseconds
 const PAGE_LOAD_TIMEOUT = 10000; // 10 seconds
 
 // Initialize the browser outside of the route handler
