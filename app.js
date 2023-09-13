@@ -43,7 +43,6 @@ app.get('/', async (req, res) => {
             await page.goto(url, { timeout: PAGE_LOAD_TIMEOUT });
 
             const html = await page.content();
-            await page.close();
 
             // Cache the HTML content for 1 minute
             cache.put(url, html, cacheDuration);
@@ -51,13 +50,14 @@ app.get('/', async (req, res) => {
             res.statusCode = 200;
             res.send(html);
         } catch (error) {
-            if(page) {
-                await page.close();
-            }
             res.statusCode = 422;
             const errorMessage = error.toString();
             console.log(errorMessage);
             res.send(errorMessage);
+        } finally {
+            if(page) {
+                page.close();
+            }
         }
     }
 });
