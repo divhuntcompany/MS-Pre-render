@@ -1,63 +1,73 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
-const cache = require('memory-cache');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
-const cacheDuration = 15 * 60 * 1000; // 15 minute in milliseconds
-const PAGE_LOAD_TIMEOUT = 10000; // 10 seconds
+
+const PAGE_LOAD_TIMEOUT = 10000; 
 
 // Initialize the browser outside of the route handler
 let browserPromise = puppeteer.launch({
     headless: true
 });
 
-// Rate limiting middleware
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
-
-app.get('/', async (req, res) => {
+app.get('/', async (req, res) => 
+{
     const url = req.headers?.url;
+
     let page = null;
 
-    if (!url) {
+    if (!url) 
+    {
         res.statusCode = 422;
         res.send('');
-    } else {
-        const cachedHtml = cache.get(url);
-        if (cachedHtml) {
-            console.log('Serving cached content');
-            res.statusCode = 200;
-            res.send(cachedHtml);
-            return;
-        }
-
-        try {
+    } 
+    else 
+    {
+        try 
+        {
             const browser = await browserPromise;
-            
             page = await browser.newPage();
 
-            await page.goto(url, { timeout: PAGE_LOAD_TIMEOUT });
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: PAGE_LOAD_TIMEOUT });
+
+            const checkLoaderCount = async () => 
+            {
+                return await page.$$eval('.dh-loader', elements => elements.length);
+            };
+
+            let loaderCount = 0;
+            let loaderTries = 0;
+
+            do 
+            {
+                loaderTries++;
+                loaderCount = await checkLoaderCount();
+
+                if(loaderCount > 0) 
+                {
+                    await page.waitForTimeout(200);
+                }
+            } 
+            while (loaderCount > 0 && loaderTries < 10);
 
             const html = await page.content();
 
-            // Cache the HTML content for 1 minute
-            cache.put(url, html, cacheDuration);
+            await page.close();
 
             res.statusCode = 200;
             res.send(html);
-        } catch (error) {
+        } 
+        catch (error) 
+        {
+            if(page) 
+            {
+                await page.close();
+            }
+
             res.statusCode = 422;
             const errorMessage = error.toString();
             console.log(errorMessage);
             res.send(errorMessage);
-        } finally {
-            if(page) {
-                page.close();
-            }
         }
     }
 });
@@ -76,4 +86,4 @@ process.on('SIGTERM', async () => {
         console.log('Server closed.');
         process.exit(0);
     });
-})
+});
