@@ -29,26 +29,7 @@ app.get('/', async (req, res) =>
             page = await browser.newPage();
 
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: PAGE_LOAD_TIMEOUT });
-
-            const checkLoaderCount = async () => 
-            {
-                return await page.$$eval('.dh-loader', elements => elements.length);
-            };
-
-            let loaderCount = 0;
-            let loaderTries = 0;
-
-            do 
-            {
-                loaderTries++;
-                loaderCount = await checkLoaderCount();
-
-                if(loaderCount > 0) 
-                {
-                    await page.waitForTimeout(200);
-                }
-            } 
-            while (loaderCount > 0 && loaderTries < 10);
+            await page.waitForSelector('.dh-loader', { hidden: true, timeout: 2000 });
 
             const html = await page.content();
 
